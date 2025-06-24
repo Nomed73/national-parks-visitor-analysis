@@ -74,39 +74,39 @@ for idx, row in df.iterrows():
     description = row.get("description", None)
     source_url = row.get("source_url", None)
 
-    # # Check if event already exists based on name and start date
-    # check_res = conn.execute(
-    #     text("SELECT id FROM major_us_events WHERE event_name = :name AND start_date = :sdate"),
-    #     {"name": event_name, "sdate": start_date}
-    # )
-    # existing = check_res.fetchone()
+    # Check if event already exists based on name and start date
+    check_res = conn.execute(
+        text("SELECT id FROM major_us_events WHERE event_name = :name AND start_date = :sdate"),
+        {"name": event_name, "sdate": start_date}
+    )
+    existing = check_res.fetchone()
 
-    # if existing:
-    #     event_id = existing[0]
-    # else:
+    if existing:
+        event_id = existing[0]
+    else:
         # Insert new event
-    res = conn.execute(text("""
-        INSERT INTO major_us_events (
-            event_name, event_type_id, start_date, end_date, year, month,
-            impact_level, description, source_url
-        )
-        VALUES (
-            :event_name, :event_type_id, :start_date, :end_date,
-            :year, :month, :impact_level, :description, :source_url
-        )
-        RETURNING id
-    """), {
-        "event_name": event_name,
-        "event_type_id": event_type_id,
-        "start_date": start_date,
-        "end_date": end_date,
-        "year": year,
-        "month": month,
-        "impact_level": impact_level,
-        "description": description,
-        "source_url": source_url
-    })
-    event_id = res.fetchone()[0]
+        res = conn.execute(text("""
+            INSERT INTO major_us_events (
+                event_name, event_type_id, start_date, end_date, year, month,
+                impact_level, description, source_url
+            )
+            VALUES (
+                :event_name, :event_type_id, :start_date, :end_date,
+                :year, :month, :impact_level, :description, :source_url
+            )
+            RETURNING id
+        """), {
+            "event_name": event_name,
+            "event_type_id": event_type_id,
+            "start_date": start_date,
+            "end_date": end_date,
+            "year": year,
+            "month": month,
+            "impact_level": impact_level,
+            "description": description,
+            "source_url": source_url
+        })
+        event_id = res.fetchone()[0]
 
     event_id_map[idx] = event_id
 
